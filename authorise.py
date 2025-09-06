@@ -2,12 +2,17 @@ import hashlib, secrets
 from typing import Optional
 import sqlite3
 from pim_types import AuthResult, Token
+import bcrypt 
 
-def _hash_password(pw: str) -> str:
-    return hashlib.sha256(pw.encode("utf-8")).hexdigest()
 
-def _verify_password(pw: str, pw_hash: str) -> bool:
-    return _hash_password(pw) == pw_hash
+def _hash_password(pw: str) -> bytes:
+    pw_bytes = pw.encode("utf-8")
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pw_bytes, salt)
+
+def _verify_password(pw: str, pw_hash: bytes) -> bool:
+    pw_bytes = pw.encode("utf-8")
+    return bcrypt.checkpw(pw_bytes, pw_hash)
 
 def _new_token() -> str:
     return secrets.token_hex(16)
@@ -19,6 +24,8 @@ def register_user(conn: sqlite3.Connection, username: str, password: str) -> boo
     cur.execute("SELECT 1 FROM users WHERE username = ?", (username,))
     if cur.fetchone():
         return False
+    
+
     cur.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)",
                 (username, _hash_password(password)))
     conn.commit()
@@ -28,10 +35,13 @@ def register_user(conn: sqlite3.Connection, username: str, password: str) -> boo
 def login(conn: sqlite3.Connection, username: str, password: str) -> AuthResult:
     """Check credentials and create session token if valid."""
     cur = conn.cursor()
+    # The password_hash is now retrieved as bytes
     cur.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
     row = cur.fetchone()
     if not row:
         return AuthResult(False, None, "User does not exist")
+    
+    # The password_hash from the DB is passed directly to verification
     if not _verify_password(password, row["password_hash"]):
         return AuthResult(False, None, "Invalid password")
 
