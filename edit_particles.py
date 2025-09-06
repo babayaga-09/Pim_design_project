@@ -13,7 +13,6 @@ def create_particle(conn: sqlite3.Connection, author: str, title: str, body: str
     if not title.strip() or not body.strip():
         raise ValueError("Title and body cannot be empty")
 
-    # Ensure uniqueness by querying DB
     cur = conn.cursor()
     cur.execute("SELECT 1 FROM particles WHERE lower(title) = ?", (title.lower(),))
     if cur.fetchone():
@@ -31,12 +30,11 @@ def create_particle(conn: sqlite3.Connection, author: str, title: str, body: str
         created_at=timestamp,
         updated_at=timestamp
     )
-
     storage.save_particle(conn, p)
     return p
 
 
-def update_particle_title(conn: sqlite3.Connection, pid: ParticleId, new_title: str) -> Particle:
+def update_particle_title(conn: sqlite3.Connection, current_user: str, pid: ParticleId, new_title: str) -> Particle:
     if not new_title.strip():
         raise ValueError("Title cannot be empty")
 
@@ -49,6 +47,9 @@ def update_particle_title(conn: sqlite3.Connection, pid: ParticleId, new_title: 
     if not particle:
         raise KeyError("Particle not found")
 
+    if particle.author != current_user:
+        raise PermissionError("You do not have permission to modify this particle.")
+
     updated = particle._replace(
         title=new_title,
         updated_at=datetime.datetime.now().isoformat()
@@ -57,13 +58,16 @@ def update_particle_title(conn: sqlite3.Connection, pid: ParticleId, new_title: 
     return updated
 
 
-def update_particle_body(conn: sqlite3.Connection, pid: ParticleId, new_body: str) -> Particle:
+def update_particle_body(conn: sqlite3.Connection, current_user: str, pid: ParticleId, new_body: str) -> Particle:
     if not new_body.strip():
         raise ValueError("Body cannot be empty")
 
     particle = storage.get_particle(conn, pid)
     if not particle:
         raise KeyError("Particle not found")
+        
+    if particle.author != current_user:
+        raise PermissionError("You do not have permission to modify this particle.")
 
     updated = particle._replace(
         body=new_body,
@@ -73,10 +77,13 @@ def update_particle_body(conn: sqlite3.Connection, pid: ParticleId, new_body: st
     return updated
 
 
-def add_tags(conn: sqlite3.Connection, pid: ParticleId, tags: Set[str]) -> Particle:
+def add_tags(conn: sqlite3.Connection, current_user: str, pid: ParticleId, tags: Set[str]) -> Particle:
     particle = storage.get_particle(conn, pid)
     if not particle:
         raise KeyError("Particle not found")
+        
+    if particle.author != current_user:
+        raise PermissionError("You do not have permission to modify this particle.")
 
     updated_tags = particle.tags.union(tags)
     updated = particle._replace(
@@ -87,10 +94,13 @@ def add_tags(conn: sqlite3.Connection, pid: ParticleId, tags: Set[str]) -> Parti
     return updated
 
 
-def remove_tags(conn: sqlite3.Connection, pid: ParticleId, tags: Set[str]) -> Particle:
+def remove_tags(conn: sqlite3.Connection, current_user: str, pid: ParticleId, tags: Set[str]) -> Particle:
     particle = storage.get_particle(conn, pid)
     if not particle:
         raise KeyError("Particle not found")
+        
+    if particle.author != current_user:
+        raise PermissionError("You do not have permission to modify this particle.")
 
     updated_tags = particle.tags.difference(tags)
     updated = particle._replace(
@@ -101,5 +111,14 @@ def remove_tags(conn: sqlite3.Connection, pid: ParticleId, tags: Set[str]) -> Pa
     return updated
 
 
-def delete_particle(conn: sqlite3.Connection, pid: ParticleId) -> bool:
+def delete_particle(conn: sqlite3.Connection, current_user: str, pid: ParticleId) -> bool:
+    particle = storage.get_particle(conn, pid)
+    if not particle:
+        # If the particle doesn't exist, we can say it was deleted.
+        return True 
+
+    if particle.author != current_user:
+        raise PermissionError("You do not have permission to delete this particle.")
+
+
     return storage.delete_particle(conn, pid)
