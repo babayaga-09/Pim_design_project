@@ -3,6 +3,8 @@ from typing import NamedTuple, Dict, Set, List, Optional
 
 class Particle(NamedTuple):
     id: str
+    user_id: int
+    user_facing_id: int
     title: str
     body: str
     author: str
@@ -13,6 +15,8 @@ class Particle(NamedTuple):
 
 class QueryHit(NamedTuple):
     id: str
+    user_facing_id: int
+    created_at: str #
     title: str
     score: float
     snippet: str
@@ -22,7 +26,8 @@ class Storage(NamedTuple):
     users: Dict[str, str]  # username -> password_hash
     sessions: Dict[str, str]  # token -> username
     particles: Dict[str, Particle]  # particle_id -> Particle
-    titles: Dict[str, str]  
+    titles: Dict[str, str]  # normalized title -> particle_id
+
 
 class AuthResult(NamedTuple):
     ok: bool
