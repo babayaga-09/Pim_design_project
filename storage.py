@@ -20,8 +20,9 @@ def _create_tables(conn: sqlite3.Connection) -> None:
     # Users
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY,
-        password_hash TEXT NOT NULL
+        id INTEGER PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        password_hash BLOB NOT NULL
     )
     """)
 
@@ -38,12 +39,16 @@ def _create_tables(conn: sqlite3.Connection) -> None:
     cur.execute("""
     CREATE TABLE IF NOT EXISTS particles (
         id TEXT PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        user_facing_id INTEGER NOT NULL,
         title TEXT NOT NULL,
         body TEXT NOT NULL,
         tags TEXT,
         created_at TEXT,
         updated_at TEXT,
-        author TEXT
+        author TEXT,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        UNIQUE(author, user_facing_id)
     )
     """)
 
@@ -51,19 +56,20 @@ def _create_tables(conn: sqlite3.Connection) -> None:
 
 
 
-def save_particle(conn: sqlite3.Connection, p: Particle) -> None:
-    """
-    Insert or replace a particle in the database.
-    Tags are stored as a comma-separated string.
-    """
+def save_particle(conn: sqlite3.Connection, p: Particle):
+    """Insert or update a particle."""
+    tags_str = ",".join(sorted(list(p.tags)))
     cur = conn.cursor()
     cur.execute("""
-    INSERT OR REPLACE INTO particles (id, title, body, tags, created_at, updated_at, author)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, (
-        p.id, p.title, p.body, ",".join(p.tags),
-        p.created_at, p.updated_at, p.author
-    ))
+        INSERT INTO particles (id, user_id, user_facing_id, title, body, tags, created_at, updated_at, author)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            title=excluded.title,
+            body=excluded.body,
+            tags=excluded.tags,
+            updated_at=excluded.updated_at
+    """, (p.id, p.user_id, p.user_facing_id, p.title, p.body, tags_str, p.created_at, p.updated_at, p.author))
+    
     conn.commit()
 
 
@@ -84,6 +90,8 @@ def get_particle(conn: sqlite3.Connection, pid: ParticleId) -> Optional[Particle
         return None
     return Particle(
         id=row["id"],
+        user_id=row["user_id"],
+        user_facing_id=row["user_facing_id"],
         title=row["title"],
         body=row["body"],
         author=row["author"],
@@ -91,4 +99,27 @@ def get_particle(conn: sqlite3.Connection, pid: ParticleId) -> Optional[Particle
         created_at=row["created_at"],
         updated_at=row["updated_at"]
     )
+
+
+def get_particle_by_user_id(conn: sqlite3.Connection, author: str, user_id: int) -> Optional[Particle]:
+    """Fetch a particle by its user-facing ID and author."""
+    cur = conn.cursor()
+    # This query will fetch the particle if and only if the author matches
+    cur.execute("SELECT * FROM particles WHERE author = ? AND user_id = ?", (author, user_id))
+    row = cur.fetchone()
+    if not row:
+        return None
+    return Particle(
+        id=row["id"],
+        user_id=row["user_id"],
+        user_facing_id=row["user_facing_id"],
+        title=row["title"],
+        body=row["body"],
+        author=row["author"],
+        tags=set(row["tags"].split(",")) if row["tags"] else set(),
+        created_at=row["created_at"],
+        updated_at=row["updated_at"]
+    )
+
+
 
