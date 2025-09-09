@@ -9,11 +9,9 @@ class User(NamedTuple):
     id: int
     username: str
 
-# ------------------------------
 # Helpers
-# ------------------------------
 
-def _hash_password(pw: str) -> str: # Return a string now
+def _hash_password(pw: str) -> str: # Return a string 
     pw_bytes = pw.encode("utf-8")
     salt = bcrypt.gensalt()
     hashed_bytes = bcrypt.hashpw(pw_bytes, salt)
@@ -28,9 +26,7 @@ def _new_token() -> str:
     return secrets.token_hex(16)
 
 
-# ------------------------------
 # Public API
-# ------------------------------
 
 def register_user(conn: sqlite3.Connection, username: str, password: str) -> bool:
     """Add a new user. Return False if already exists."""
