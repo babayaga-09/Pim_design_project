@@ -1,22 +1,36 @@
+# authorise_sqlite.py
 import hashlib, secrets
-from typing import Optional
+from typing import Optional, NamedTuple
 import sqlite3
 from pim_types import AuthResult, Token
 import bcrypt 
 
+class User(NamedTuple):
+    id: int
+    username: str
 
-def _hash_password(pw: str) -> bytes:
+# ------------------------------
+# Helpers
+# ------------------------------
+
+def _hash_password(pw: str) -> str: # Return a string now
     pw_bytes = pw.encode("utf-8")
     salt = bcrypt.gensalt()
-    return bcrypt.hashpw(pw_bytes, salt)
+    hashed_bytes = bcrypt.hashpw(pw_bytes, salt)
+    return hashed_bytes.decode("utf-8") # Decode bytes to a clean string
 
-def _verify_password(pw: str, pw_hash: bytes) -> bool:
+def _verify_password(pw: str, pw_hash: str) -> bool: # Expect a string
     pw_bytes = pw.encode("utf-8")
-    return bcrypt.checkpw(pw_bytes, pw_hash)
+    pw_hash_bytes = pw_hash.encode("utf-8") # Encode the string hash back to bytes
+    return bcrypt.checkpw(pw_bytes, pw_hash_bytes)
 
 def _new_token() -> str:
     return secrets.token_hex(16)
 
+
+# ------------------------------
+# Public API
+# ------------------------------
 
 def register_user(conn: sqlite3.Connection, username: str, password: str) -> bool:
     """Add a new user. Return False if already exists."""
@@ -59,9 +73,14 @@ def logout(conn: sqlite3.Connection, session: Token) -> bool:
     return cur.rowcount > 0
 
 
-def whoami(conn: sqlite3.Connection, session: Token) -> Optional[str]:
-    """Return username if session is valid, else None."""
+def whoami(conn: sqlite3.Connection, session: Token) -> Optional[User]:
+    """Return user's ID and username if session is valid, else None."""
     cur = conn.cursor()
-    cur.execute("SELECT username FROM sessions WHERE token = ?", (session,))
+    cur.execute("""
+        SELECT u.id, u.username
+        FROM users u
+        JOIN sessions s ON u.username = s.username
+        WHERE s.token = ?
+    """, (session,))
     row = cur.fetchone()
-    return row["username"] if row else None
+    return User(id=row["id"], username=row["username"]) if row else None
