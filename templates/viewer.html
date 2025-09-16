@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>PIM labs — Viewer</title>
+  <link rel="stylesheet" href="static/css/base.css">
+  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="static/css/components.css">
+  <link rel="stylesheet" href="static/css/pages.css">
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+<header class="topbar">
+  <div class="container topbar__inner">
+    <a class="brand" href="index.html">PIM labs</a>
+    <nav class="topnav">
+      <a class="btn" href="index.html">Home</a>
+      <a class="btn" href="settings.html">Settings</a>
+      <a class="btn" href="login.html">Logout</a>
+    </nav>
+  </div>
+</header>
+<main class="main container">
+  <section class="card">
+    <div class="viewer__head">
+      <div class="row">
+        <span class="idchip">#123</span>
+        <span class="badge">2024-05-23</span>
+      </div>
+      <a class="btn btn--success" href="editor.html">Edit</a>
+    </div>
+
+    <h2 style="margin-top:1rem">Article on gut bacteria</h2>
+
+    <article class="viewer ql-editor">
+      <p>Rendered content goes here.</p>
+    </article>
+
+  </section>
+</main>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/viewer.js"></script>
+</body>
+</html>

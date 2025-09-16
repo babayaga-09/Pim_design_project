@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>PIM labs — Login</title>
+  <link rel="stylesheet" href="static/css/base.css">
+  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="static/css/components.css">
+  <link rel="stylesheet" href="static/css/pages.css">
+</head>
+<body>
+<main class="main container">
+  <section class="auth card">
+    <h1 class="auth__title">Sign in</h1>
+    <form class="form form--auth">
+      <label class="form__field">Username
+        <input class="input" name="username" autocomplete="username"/>
+      </label>
+      <label class="form__field">Password
+        <input class="input" type="password" name="password" autocomplete="current-password"/>
+      </label>
+      <button class="btn btn--primary">Sign in</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 1rem;">
+      Don't have an account? <a href="/register.html">Sign Up</a>
+    </p>
+
+  </section>
+</main>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/login.js"></script>
+</body>
+</html>

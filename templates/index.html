@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>PIM labs — Search</title>
+  <link rel="stylesheet" href="static/css/base.css">
+  <link rel="stylesheet" href="static/css/layout.css">
+  <link rel="stylesheet" href="static/css/components.css">
+  <link rel="stylesheet" href="static/css/pages.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="container topbar__inner">
+    <a class="brand" href="index.html">PIM labs</a>
+    <nav class="topnav">
+      <a class="btn" href="settings.html">Settings</a>
+      <a class="btn" href="login.html">Logout</a>
+    </nav>
+  </div>
+</header>
+<main class="main container">
+  <section class="card search-hero">
+    <form class="searchbar">
+      <input class="input" placeholder="Search or type a new title…"/>
+      <a class="btn" href="editor.html">Create</a>
+      <button class="btn btn--primary">Search</button>
+    </form>
+  </section>
+  <section class="card">
+    <table class="table">
+      <thead><tr><th>ID</th><th>Date</th><th>Title</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>#123</td><td>2024-05-23</td><td>Article on gut bacteria</td>
+          <td><a class="btn btn--success" href="viewer.html">View</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/search.js"></script>
+</body>
+</html>
