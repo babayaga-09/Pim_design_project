@@ -1,0 +1,55 @@
+/* Login */
+.auth { max-width: 420px; margin: 10vh auto; }
+.auth__title { text-align:center; margin-bottom: var(--space-4); }
+
+/* Search */
+.searchbar { display: grid; grid-template-columns: 1fr auto auto; gap: var(--space-3); }
+@media (max-width: 700px){ .searchbar { grid-template-columns: 1fr; } }
+.table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  table-layout: fixed; 
+}
+.table th, .table td { 
+  padding: .75rem; 
+  border-bottom: 1px solid var(--border); 
+  text-align: left;
+}
+
+/* Give specific widths to each column header */
+.table th:nth-child(1) { width: 10%; } /* ID Column */
+.table th:nth-child(2) { width: 20%; } /* Date Column */
+.table th:nth-child(3) { width: 50%; } /* Title Column */
+.table th:nth-child(4) { width: 20%; } /* Actions Column */
+
+/* Style to truncate long titles */
+.table__title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Style to group action buttons */
+.table__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Viewer */
+.viewer { line-height: 1.65; }
+
+.viewer * {
+  color: var(--ink) !important;
+}
+
+.viewer a {
+  color: #ffffff53 !important;
+  text-decoration: underline !important;
+}
+
+/* Add vertical spacing to the main sections on the editor page */
+.editor-page .card > .split,
+.editor-page .card > .grid {
+  margin-bottom: 1.5rem; /* Creates space below the header and title sections */
+}
+
