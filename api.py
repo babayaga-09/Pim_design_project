@@ -135,6 +135,10 @@ async def read_index():
 async def read_main_page():
     return "templates/index.html"
 
+@app.get("/register.html", response_class=FileResponse)
+async def read_register_page():
+    return "templates/register.html"
+
 # Particle Endpoints
 
 @app.post("/particles")
