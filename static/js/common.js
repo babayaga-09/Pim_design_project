@@ -1,6 +1,3 @@
-// Helper Functions
-
-
 /**
  * Checks if a session token exists. If not, it redirects the user to the login page.
  * @param {string} token - The session token from localStorage.
@@ -61,7 +58,7 @@ async function postrequest(endpoint, bodyObject, successAction) {
 }
 
 /**
- * A specific callback for the login function to store the session and redirect.
+ A specific callback for the login function to store the session and redirect.
  * @param {object} data - The response data from the login API call.
  */
 function storeSessionInfo(data) {
@@ -69,9 +66,7 @@ function storeSessionInfo(data) {
   window.location.href = '/index.html';
 }
 
-/**
- * Attaches logout functionality to any logout buttons on the page.
- */
+//Attaches logout functionality to any logout buttons on the page.
 function initializeLogoutButtons() {
   const token = localStorage.getItem('pim_session');
   const logoutButtons = document.querySelectorAll('a[href="login.html"]');
