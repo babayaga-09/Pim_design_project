@@ -16,26 +16,24 @@
   text-align: left;
 }
 
-/* Give specific widths to each column header */
 .table th:nth-child(1) { width: 10%; } /* ID Column */
 .table th:nth-child(2) { width: 20%; } /* Date Column */
 .table th:nth-child(3) { width: 50%; } /* Title Column */
 .table th:nth-child(4) { width: 20%; } /* Actions Column */
 
-/* Style to truncate long titles */
+/*to truncate long titles */
 .table__title {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Style to group action buttons */
+/* to group action buttons */
 .table__actions {
   display: flex;
   gap: var(--space-2);
 }
 
-/* Viewer */
 .viewer { line-height: 1.65; }
 
 .viewer * {
@@ -47,9 +45,37 @@
   text-decoration: underline !important;
 }
 
-/* Add vertical spacing to the main sections on the editor page */
 .editor-page .card > .split,
 .editor-page .card > .grid {
-  margin-bottom: 1.5rem; /* Creates space below the header and title sections */
+  margin-bottom: 1.5rem; 
+}
+
+.viewer-header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.viewer-header h2 {
+  margin-top: 0;
+  order: 1; 
+}
+
+.viewer-header .btn {
+  order: 2; 
+}
+
+.viewer-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+}
+
+.form--auth {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; 
 }
 
