@@ -1,3 +1,7 @@
+/**
+ * Initializes the particle editor page. It handles loading existing particles or setting up a new one.
+ * @param {string} token - The user's session token.
+ */
 async function initializeEditorPage(token) {
   // These helper functions are from common.js
   if (!guard(token)) return;
@@ -47,7 +51,7 @@ async function initializeEditorPage(token) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_body: body }),
       });
-      // Note: You might also want a separate call to update the title here
+
     } else {
       // Logic to create a new particle
       response = await fetch(`/particles?session=${token}`, {
