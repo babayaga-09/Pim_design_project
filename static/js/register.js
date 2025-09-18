@@ -1,3 +1,12 @@
+/**
+ * Initializes the registration page functionality.
+ * This function adds a 'submit' event listener to the registration form.
+ * It prevents the default form submission, validates the inputs, and sends a POST request to the '/register' endpoint.
+ * On success, it alerts the user and redirects to the login page.
+ * On failure, it alerts the user with the error message from the server.
+ * * @function
+ * @returns {void}
+ */
 function initializeRegisterPage() {
   const registerForm = document.getElementById('register-form');
   
