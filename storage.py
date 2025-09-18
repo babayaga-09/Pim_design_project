@@ -1,3 +1,9 @@
+"""
+This module handles all direct interactions with the SQLite database.
+It includes functions for creating the database schema and performing CRUD
+(Create, Read, Update, Delete) operations on particles.
+"""
+
 import sqlite3
 from typing import Optional
 from pim_types import Particle, ParticleId
@@ -57,7 +63,7 @@ def _create_tables(conn: sqlite3.Connection) -> None:
 
 
 def save_particle(conn: sqlite3.Connection, p: Particle):
-    """Insert or update a particle."""
+    """Insert or update a particle """
     tags_str = ",".join(sorted(list(p.tags)))
     cur = conn.cursor()
     cur.execute("""
