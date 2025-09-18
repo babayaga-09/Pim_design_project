@@ -1,3 +1,11 @@
+/**
+ * Initializes the login page functionality.
+ * * This function selects the login form and adds an event listener for the 'submit' event.
+ * It prevents the default form submission, retrieves the username and password from the form inputs,
+ * and sends them to the server using a POST request.
+ * * @function
+ * @returns {void}
+ */
 function initializeLoginPage() {
   const loginForm = document.querySelector('.form--auth');
   
