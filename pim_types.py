@@ -1,7 +1,13 @@
+"""
+pim_types defines the core data structures used throughout the PIM application, 
+using NamedTuple allows for creating immutable, lightweight, and readable data objects.
+"""
+
 from typing import NamedTuple, Dict, Set, List, Optional
 
 
 class Particle(NamedTuple):
+    """represents a single piece of information ( a "particle")"""
     id: str
     user_id: int
     user_facing_id: int
@@ -14,6 +20,7 @@ class Particle(NamedTuple):
 
 
 class QueryHit(NamedTuple):
+    """represents a single search result item"""
     id: str
     user_facing_id: int
     created_at: str #
