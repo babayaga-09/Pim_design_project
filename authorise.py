@@ -1,4 +1,8 @@
-# authorise_sqlite.py
+""" This module handles user authentication and session management
+It includes functions for user registration, login, logout, and verifying
+session tokens. Passwords are hashed using bcrypt
+"""
+
 import hashlib, secrets
 from typing import Optional, NamedTuple
 import sqlite3
@@ -6,23 +10,31 @@ from pim_types import AuthResult, Token
 import bcrypt 
 
 class User(NamedTuple):
+    """Represents an authenticated user's basic information"""
     id: int
     username: str
 
 # Helpers
-
 def _hash_password(pw: str) -> str: # Return a string 
+    """ Hashes a password using bcrypt
+    Args:
+        pw: The plaintext password
+    Returns:
+        The bcrypt-hashed password as a UTF-8 string
+    """
     pw_bytes = pw.encode("utf-8")
     salt = bcrypt.gensalt()
     hashed_bytes = bcrypt.hashpw(pw_bytes, salt)
     return hashed_bytes.decode("utf-8") # Decode bytes to a clean string
 
 def _verify_password(pw: str, pw_hash: str) -> bool: # Expect a string
+    """verifies a plaintext password against a bcrypt hash and returns a bool"""
     pw_bytes = pw.encode("utf-8")
     pw_hash_bytes = pw_hash.encode("utf-8") # Encode the string hash back to bytes
     return bcrypt.checkpw(pw_bytes, pw_hash_bytes)
 
 def _new_token() -> str:
+    """generates a new, cryptographically secure session token -> generates 32 hex-string token"""
     return secrets.token_hex(16)
 
 
@@ -43,14 +55,21 @@ def register_user(conn: sqlite3.Connection, username: str, password: str) -> boo
 
 
 def login(conn: sqlite3.Connection, username: str, password: str) -> AuthResult:
-    """Check credentials and create session token if valid."""
+    """Check credentials and create session token if valid
+    Args:
+        conn: an active SQLite database connection.
+        username: The username for login
+        password: The plaintext password for verification.
+    Returns:
+        An AuthResult object indicating success or failure, containing a
+        session token on success.
+    """
     cur = conn.cursor()
     # The password_hash is now retrieved as bytes
     cur.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
     row = cur.fetchone()
     if not row:
         return AuthResult(False, None, "User does not exist")
-    
     # The password_hash from the DB is passed directly to verification
     if not _verify_password(password, row["password_hash"]):
         return AuthResult(False, None, "Invalid password")
@@ -62,7 +81,7 @@ def login(conn: sqlite3.Connection, username: str, password: str) -> AuthResult:
 
 
 def logout(conn: sqlite3.Connection, session: Token) -> bool:
-    """Remove session token if present."""
+    """Removes a session token from the database if present."""
     cur = conn.cursor()
     cur.execute("DELETE FROM sessions WHERE token = ?", (session,))
     conn.commit()
