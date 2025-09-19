@@ -1,7 +1,8 @@
 """
-This module contains the business logic for creating, updating, and deleting particles
+This module contains the logic for creating, updating, and deleting particles.
+
 It handles validation, permission checks, and orchestrates calls to the storage
-module to persist changes
+module to persist changes.
 """
 
 import uuid
@@ -17,30 +18,34 @@ def new_uuid() -> str:
     return str(uuid.uuid4())
 
 def now_iso() -> str:
-    """Returns the current time in ISO 8601 format"""
+    """Returns the current time in ISO 8601 format."""
     return datetime.now().isoformat()
 
 def normalize_title(title: str) -> str:
-    """Normalizes a title string by converting to lowercase and removing extra whitespace"""
     return " ".join(title.lower().split())
 
 
 def create_particle(conn: sqlite3.Connection, user: User, title: str, body: str, tags: Set[str]) -> Particle:
     """
-    Creates a new particle for a given user
+    Creates a new particle for a given user.
+
     Args:
         conn: An active SQLite database connection.
-        user: The authenticated User object creating the particle
-        title: The title for the new particle
-        body: The body content for the new particle
+        user: The authenticated User object creating the particle.
+        title: The title for the new particle.
+        body: The body content for the new particle.
         tags: A set of tags for the new particle.
+
     Raises:
-        ValueError: If title/body are empty or if the title is not unique for the user
+        ValueError: If title/body are empty or if the title is not unique for the user.
+
     Returns:
-        The newly created Particle object
+        The newly created Particle object.
     """
+
     if not title.strip() or (not body.strip() and "<p><br></p>" not in body):
         raise ValueError("Title and body cannot be empty")
+
     cur = conn.cursor()
     cur.execute("SELECT 1 FROM particles WHERE lower(title) = ? AND author = ?", (title.lower(), user.username))
     if cur.fetchone():
@@ -73,19 +78,24 @@ def create_particle(conn: sqlite3.Connection, user: User, title: str, body: str,
 
 
 def update_particle_title(conn: sqlite3.Connection, current_user: str, pid: ParticleId, new_title: str) -> Particle:
-    """Updates the title of an existing particle
-    Args:
-        conn: An active SQLite database connection
-        current_user: The username of the user making the request
-        pid: The ID of the particle to update
-        new_title: The new title for the particle
-    Raises:
-        ValueError: If the new title is empty or not unique for the user
-        KeyError: If the particle is not found
-        PermissionError: If the user does not own the particle
-    Returns:
-        The updated Particle object
     """
+    Updates the title of an existing particle.
+
+    Args:
+        conn: An active SQLite database connection.
+        current_user: The username of the user making the request.
+        pid: The ID of the particle to update.
+        new_title: The new title for the particle.
+
+    Raises:
+        ValueError: If the new title is empty or not unique for the user.
+        KeyError: If the particle is not found.
+        PermissionError: If the user does not own the particle.
+
+    Returns:
+        The updated Particle object.
+    """
+
     if not new_title.strip():
         raise ValueError("Title cannot be empty")
 
@@ -111,19 +121,23 @@ def update_particle_title(conn: sqlite3.Connection, current_user: str, pid: Part
 
 def update_particle_body(conn: sqlite3.Connection, current_user: str, pid: ParticleId, new_body: str) -> Particle:
     """
-    Updates the body of an existing particle
+    Updates the body of an existing particle.
+
     Args:
-        conn: An active SQLite database connection
-        current_user: The username of the user making the request
-        pid: The ID of the particle to update
-        new_body: The new body content
+        conn: An active SQLite database connection.
+        current_user: The username of the user making the request.
+        pid: The ID of the particle to update.
+        new_body: The new body content.
+
     Raises:
-        ValueError: If the new body is empty
-        KeyError: If the particle is not found
-        PermissionError: If the user does not own the particle
+        ValueError: If the new body is empty.
+        KeyError: If the particle is not found.
+        PermissionError: If the user does not own the particle.
+
     Returns:
-        The updated Particle object
+        The updated Particle object.
     """
+
     if not new_body.strip() and "<p><br></p>" not in new_body:
         raise ValueError("Body cannot be empty")
 
@@ -143,19 +157,6 @@ def update_particle_body(conn: sqlite3.Connection, current_user: str, pid: Parti
 
 
 def add_tags(conn: sqlite3.Connection, current_user: str, pid: ParticleId, tags: Set[str]) -> Particle:
-    """
-    Adds a set of tags to a particle
-    Args:
-        conn: An active SQLite database connection.
-        current_user: The username of the user making the request.
-        pid: The ID of the particle to update
-        tags: A set of tags to add to the particle
-    Raises:
-        KeyError: If the particle is not found
-        PermissionError: If the user does not own the particle.
-    Returns:
-        The updated Particle object
-    """
     particle = storage.get_particle(conn, pid)
     if not particle:
         raise KeyError("Particle not found")
@@ -171,21 +172,8 @@ def add_tags(conn: sqlite3.Connection, current_user: str, pid: ParticleId, tags:
     storage.save_particle(conn, updated)
     return updated
 
-def remove_tags(conn: sqlite3.Connection, current_user: str, pid: ParticleId, tags: Set[str]) -> Particle:
-    """
-    Removes a set of tags from a particle
-    Args:
-        conn: An active SQLite database connection
-        current_user: The username of the user making the request
-        pid: The ID of the particle to update
-        tags: A set of tags to remove from the particle
-    Raises:
-        KeyError: If the particle is not found
-        PermissionError: If the user does not own the particle 
-    Returns:
-        The updated Particle object
-    """
 
+def remove_tags(conn: sqlite3.Connection, current_user: str, pid: ParticleId, tags: Set[str]) -> Particle:
     particle = storage.get_particle(conn, pid)
     if not particle:
         raise KeyError("Particle not found")
@@ -204,16 +192,20 @@ def remove_tags(conn: sqlite3.Connection, current_user: str, pid: ParticleId, ta
 
 def delete_particle(conn: sqlite3.Connection, current_user: str, pid: ParticleId) -> bool:
     """
-    deletes a particle
+    Deletes a particle.
+
     Args:
-        conn: An active SQLite database connection
-        current_user: The username of the user making the request
-        pid: The ID of the particle to delete
+        conn: An active SQLite database connection.
+        current_user: The username of the user making the request.
+        pid: The ID of the particle to delete.
+
     Raises:
-        PermissionError: If the user does not own the particle
+        PermissionError: If the user does not own the particle.
+
     Returns:
-        True if the particle was deleted or did not exist, False on failure
+        True if the particle was deleted or did not exist, False on failure.
     """
+
     particle = storage.get_particle(conn, pid)
     if not particle:
         return True 
@@ -222,3 +214,23 @@ def delete_particle(conn: sqlite3.Connection, current_user: str, pid: ParticleId
         raise PermissionError("You do not have permission to delete this particle.")
 
     return storage.delete_particle(conn, pid)
+
+def update_particle(conn, author: str, pid: str, new_title: str, new_body: str):
+    """Updates the title and body of a particle if the author matches."""
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        UPDATE particles
+        SET title = ?, body = ?, updated_at = datetime('now')
+        WHERE id = ? AND author = ?
+        """,
+        (new_title, new_body, pid, author)
+    )
+    conn.commit()
+    
+    if cursor.rowcount == 0:
+        return None  # Indicates that no row was updated
+    
+    # Return the updated particle
+    from storage import get_particle
+    return get_particle(conn, pid)
