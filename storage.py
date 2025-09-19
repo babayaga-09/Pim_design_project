@@ -5,7 +5,7 @@ It includes functions for creating the database schema and performing CRUD
 """
 
 import sqlite3
-from typing import Optional
+from typing import Optional, List
 from pim_types import Particle, ParticleId
 
 
@@ -22,8 +22,6 @@ def make_connection(db_path: str = "pim.db") -> sqlite3.Connection:
 def _create_tables(conn: sqlite3.Connection) -> None:
     """Create required tables if they don't exist."""
     cur = conn.cursor()
-
-    # Users
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY,
@@ -31,8 +29,6 @@ def _create_tables(conn: sqlite3.Connection) -> None:
         password_hash BLOB NOT NULL
     )
     """)
-
-    # Sessions
     cur.execute("""
     CREATE TABLE IF NOT EXISTS sessions (
         token TEXT PRIMARY KEY,
@@ -40,8 +36,6 @@ def _create_tables(conn: sqlite3.Connection) -> None:
         FOREIGN KEY (username) REFERENCES users(username)
     )
     """)
-
-    # Particles
     cur.execute("""
     CREATE TABLE IF NOT EXISTS particles (
         id TEXT PRIMARY KEY,
@@ -57,13 +51,12 @@ def _create_tables(conn: sqlite3.Connection) -> None:
         UNIQUE(author, user_facing_id)
     )
     """)
-
     conn.commit()
 
 
 
 def save_particle(conn: sqlite3.Connection, p: Particle):
-    """Insert or update a particle """
+    """Insert or update a particle."""
     tags_str = ",".join(sorted(list(p.tags)))
     cur = conn.cursor()
     cur.execute("""
@@ -75,7 +68,7 @@ def save_particle(conn: sqlite3.Connection, p: Particle):
             tags=excluded.tags,
             updated_at=excluded.updated_at
     """, (p.id, p.user_id, p.user_facing_id, p.title, p.body, tags_str, p.created_at, p.updated_at, p.author))
-    
+
     conn.commit()
 
 
@@ -110,7 +103,6 @@ def get_particle(conn: sqlite3.Connection, pid: ParticleId) -> Optional[Particle
 def get_particle_by_user_id(conn: sqlite3.Connection, author: str, user_id: int) -> Optional[Particle]:
     """Fetch a particle by its user-facing ID and author."""
     cur = conn.cursor()
-    # This query will fetch the particle if and only if the author matches
     cur.execute("SELECT * FROM particles WHERE author = ? AND user_id = ?", (author, user_id))
     row = cur.fetchone()
     if not row:
@@ -146,4 +138,5 @@ def get_all_particles_by_author(conn: sqlite3.Connection, author: str) -> List[P
             updated_at=row["updated_at"]
         ))
     return particles
+
 
