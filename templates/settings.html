@@ -23,23 +23,27 @@
     <h2>Settings</h2>
     <div class="grid two" style="margin-top: 1rem;">
       <label class="form__field">Theme
-        <select class="select">
-          <option>System</option>
-          <option>Light</option>
-          <option>Dark</option>
+        <select id="theme-select" class="select">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
         </select>
       </label>
       <div class="form__field">
-        <label>Data export</label>
-        <button class="btn">Export JSON</button>
-      </div>
-      <div class="form__field">
-        <label>Data import</label>
-        <input class="input" type="file" accept=".json"/>
+        <label>Data Export</label>
+        <button id="export-button" class="btn">Export All to JSON</button>
       </div>
     </div>
   </section>
+
+  <section class="card" style="margin-top: 2rem;">
+    <h2>Technology & Purpose</h2>
+    <p style="margin-top: 1rem; line-height: 1.6;">
+        The application's purpose is to provide a secure and efficient platform for users to create, manage, and search their personal notes or 'particles'. We used a variety of technologies to bring this project to life. The backend is built with Python and the FastAPI framework, and the frontend is powered by vanilla HTML, CSS, and JavaScript. We also utilized an SQLite database for data storage, the Quill.js library for a rich text editing experience, and bcrypt for secure password hashing to handle data and enhance functionality. This tech stack was chosen for its efficiency, robustness, and ability to meet the project's requirements. Our goal was to create a secure, intuitive, and maintainable experience for our users, and we believe the technology choices reflect that commitment.
+    </p>
+  </section>
 </main>
-<script src="/static/js/app.js"></script>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/settings.js"></script>
 </body>
 </html>
+
