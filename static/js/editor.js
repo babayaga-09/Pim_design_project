@@ -11,6 +11,7 @@ async function initializeEditorPage(token) {
 
   const titleInput = document.querySelector('.input[maxlength="140"]');
   const saveButton = document.querySelector('.btn--success');
+  const deleteButton = document.getElementById('delete-button'); // Get the delete button
 
   const quill = new Quill('#editor', {
     modules: {
@@ -26,6 +27,7 @@ async function initializeEditorPage(token) {
       titleInput.value = particle.title;
       quill.root.innerHTML = particle.body;
       document.querySelector('.idchip').textContent = `#${particle.user_facing_id}`;
+      deleteButton.style.display = 'inline-flex'; // Show the delete button
     }
   } else if (newTitle) {
     // Creating a new particle
@@ -45,15 +47,15 @@ async function initializeEditorPage(token) {
 
     let response;
     if (particleId) {
-      // Logic to update an existing particle
-      response = await fetch(`/particles/${particleId}/body?session=${token}`, {
+      // to update an existing particle
+      response = await fetch(`/particles/${particleId}?session=${token}`,  {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ new_body: body }),
+        body: JSON.stringify({ title: title, body: body }),
       });
 
     } else {
-      // Logic to create a new particle
+      // to create a new particle
       response = await fetch(`/particles?session=${token}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -68,6 +70,24 @@ async function initializeEditorPage(token) {
     } else {
       alert('Failed to save particle.');
     }
+  });
+
+  deleteButton.addEventListener('click', async () => {
+    const isConfirmed = confirm('Are you sure you want to delete this particle?');
+
+    if (isConfirmed) {
+      const response = await fetch(`/particles/${particleId}?session=${token}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert('Particle deleted!');
+        window.location.href = '/index.html'; // Redirect to the main page
+      } else {
+        alert('Failed to delete particle.');
+      }
+    }
+    // If user clicks "No", do nothing
   });
 }
 
