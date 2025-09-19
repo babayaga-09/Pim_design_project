@@ -12,16 +12,16 @@ async function initializeViewerPage(token) {
   const particle = await fetchParticleById(particleId, token);
   if (particle) {
     document.title = `PIM labs — ${particle.title}`;
-    document.querySelector('.viewer__head .idchip').textContent = `#${particle.user_facing_id}`;
-    document.querySelector('.viewer__head .badge').textContent = new Date(particle.created_at).toLocaleDateString();
-    document.querySelector('h2').textContent = particle.title;
+    document.getElementById('particle-title').textContent = particle.title;
+    document.getElementById('particle-id').textContent = `#${particle.user_facing_id}`;
+    document.getElementById('particle-date').textContent = new Date(particle.created_at).toLocaleDateString();
+    document.getElementById('edit-button').href = `/editor.html?id=${particle.id}`;
     
-    // Add the ql-editor class for Quill's styles to apply
+    // The ql-editor class for Quill's styles to apply
     const articleViewer = document.querySelector('article.viewer');
     articleViewer.classList.add('ql-editor');
     articleViewer.innerHTML = particle.body;
 
-    document.querySelector('.viewer__head a.btn--success').href = `/editor.html?id=${particle.id}`;
   }
 }
 
