@@ -1,4 +1,22 @@
 /**
+ * Applies the selected theme by setting a data-theme attribute on the root <html> element.
+ * This function is now in common.js to be accessible on all pages.
+ * @param {string} theme - The theme to apply ('light' or 'dark').
+ */
+function applyTheme(theme) {
+  if (theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    // Default to dark theme if the value is anything else or not set
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
+
+// Immediately apply the theme on script load to prevent a flash of incorrect theme.
+applyTheme(localStorage.getItem('pim_theme') || 'dark');
+
+
+/**
  * Checks if a session token exists. If not, it redirects the user to the login page.
  * @param {string} token - The session token from localStorage.
  * @returns {boolean} - True if the user is authenticated, false otherwise.
@@ -58,7 +76,7 @@ async function postrequest(endpoint, bodyObject, successAction) {
 }
 
 /**
- A specific callback for the login function to store the session and redirect.
+ * A specific callback for the login function to store the session and redirect.
  * @param {object} data - The response data from the login API call.
  */
 function storeSessionInfo(data) {
@@ -66,7 +84,9 @@ function storeSessionInfo(data) {
   window.location.href = '/index.html';
 }
 
-//Attaches logout functionality to any logout buttons on the page.
+/**
+ * Attaches logout functionality to any logout buttons on the page.
+ */
 function initializeLogoutButtons() {
   const token = localStorage.getItem('pim_session');
   const logoutButtons = document.querySelectorAll('a[href="login.html"]');
