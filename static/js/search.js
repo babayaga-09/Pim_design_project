@@ -1,11 +1,3 @@
-/**
- * Initializes the search page functionality by setting up event listeners
- * and performing an initial load of particles.
- * It guards against unauthenticated access by checking for a valid session token.
- *
- * @param {string} token - The user's session token.
- * @returns {void}
- */
 function initializeSearchPage(token) {
   // This helper function is from common.js
   if (!guard(token)) return;
@@ -61,6 +53,5 @@ function initializeSearchPage(token) {
   displayParticles();
 }
 
-// Get the session token and run the initializer for this page.
 const token = localStorage.getItem('pim_session');
 initializeSearchPage(token);
