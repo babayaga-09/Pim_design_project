@@ -127,5 +127,23 @@ def get_particle_by_user_id(conn: sqlite3.Connection, author: str, user_id: int)
         updated_at=row["updated_at"]
     )
 
+def get_all_particles_by_author(conn: sqlite3.Connection, author: str) -> List[Particle]:
+    """Fetch all particles for a given author, ordered by most recent."""
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM particles WHERE author = ? ORDER BY created_at DESC", (author,))
 
+    particles = []
+    for row in cur.fetchall():
+        particles.append(Particle(
+            id=row["id"],
+            user_id=row["user_id"],
+            user_facing_id=row["user_facing_id"],
+            title=row["title"],
+            body=row["body"],
+            author=row["author"],
+            tags=set(row["tags"].split(",")) if row["tags"] else set(),
+            created_at=row["created_at"],
+            updated_at=row["updated_at"]
+        ))
+    return particles
 
