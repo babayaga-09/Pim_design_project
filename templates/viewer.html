@@ -22,17 +22,17 @@
 </header>
 <main class="main container">
   <section class="card">
-    <div class="viewer__head">
-      <div class="row">
-        <span class="idchip">#123</span>
-        <span class="badge">2024-05-23</span>
-      </div>
-      <a class="btn btn--success" href="editor.html">Edit</a>
+    <div class="viewer-header">
+      <h2 id="particle-title">Article on gut bacteria</h2>
+      <a id="edit-button" class="btn btn--success" href="editor.html">Edit</a>
     </div>
 
-    <h2 style="margin-top:1rem">Article on gut bacteria</h2>
+    <div class="viewer-meta">
+      <span id="particle-id" class="idchip">#123</span>
+      <span id="particle-date" class="badge">2024-05-23</span>
+    </div>
 
-    <article class="viewer ql-editor">
+    <article class="viewer ql-editor" style="margin-top: 1.5rem;">
       <p>Rendered content goes here.</p>
     </article>
 
