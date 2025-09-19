@@ -1,8 +1,3 @@
-"""
-This module defines the FastAPI web application, including all API endpoints
-It handles routing, request/response models, dependency injection for database
-connections, and orchestrates calls to other modules for business logic.
-"""
 from fastapi import FastAPI, Depends, HTTPException, Response
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
